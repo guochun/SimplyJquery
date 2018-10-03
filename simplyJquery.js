@@ -88,11 +88,24 @@
         return this;
     }
 
+    function ajax(url, method, data, success, fail) {
+        let xhr = new XMLHttpRequest()
+        xhr.open(url,method)
+        xhr.addEventListener('readystatechange', function(e){
+            if(this.readyState === 4 && (this.status >= 200 && this.status < 300)) {
+                success(this.responseText)
+            }else {
+                fail(this)
+            }
+        })
+        xhr.send(data)
+    }
+
     init(nodeOrSelector);
     sj.getSiblings = getSiblings;
     sj.addClass = addClass;
     sj.text = text;
-
+    sj.ajax = ajax;
     return sj;
 
 });
