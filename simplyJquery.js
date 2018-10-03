@@ -1,11 +1,56 @@
 ; (function (global, sJquery) {
 
+
+    global.sJquery = sJquery;
     global.$ = sJquery;
+
+    // global.sJquery.ajax = function ({url='', method='GET', header={}, data="",success=null, fail=null} = {}) {
+
+    //     let xhr = new XMLHttpRequest()
+    //     xhr.open(method,url)
+    //     for(let k in header) {
+    //         let v = header[k]
+    //         xhr.setRequestHeader(k, v)
+    //     }
+    //     xhr.addEventListener('readystatechange', function(e){
+    //         if(this.readyState === 4 && (this.status >= 200 && this.status < 300)) {
+    //             success && success(this.responseText)
+    //         }else {
+    //             fail && fail(this)
+    //         }
+    //     })
+    //     xhr.send(data)
+    // }
+
+    global.sJquery.ajax = function ({ url = '', method = 'GET', header = {}, data = "" } = {}) {
+
+        return new Promise(function (resolve, reject) {
+            let xhr = new XMLHttpRequest()
+            xhr.open(method, url)
+            for (let k in header) {
+                let v = header[k]
+                xhr.setRequestHeader(k, v)
+            }
+            xhr.addEventListener('readystatechange', function (e) {
+                try {
+                    if (this.readyState === 4 && (this.status >= 200 && this.status < 300)) {
+                        resolve(this.responseText)
+                    } else {
+                        reject(this)
+                    }
+
+                } catch (e) {
+                    reject(this)
+                }
+            })
+            xhr.send(data)
+        })
+    }
 
 })(this, function (nodeOrSelector) {
 
     let sj = { length: 0 }
-   
+
     function init(nodeOrSelector) {
         if (typeof nodeOrSelector === 'string') {
             let nodes = document.querySelectorAll(nodeOrSelector);
@@ -62,23 +107,23 @@
     }
 
     function text() {
-        if(arguments.length > 1) {
-            let index =arguments[0];
+        if (arguments.length > 1) {
+            let index = arguments[0];
             index = index >>> 0;
             index = index % this.length;
             let value = arguments[1];
             this[index].textContent = value;
 
-        }else{
+        } else {
             console.log(typeof arguments[0])
-            if(typeof arguments[0] === 'number'){
+            if (typeof arguments[0] === 'number') {
                 let index = arguments[0]
                 index = index >>> 0;
                 index = index % this.length;
                 return this[index].textContent;
-            }else if(typeof arguments[0] === 'string') {
+            } else if (typeof arguments[0] === 'string') {
                 let value = arguments[0];
-                for(let i = 0; i < this.length; i++) {
+                for (let i = 0; i < this.length; i++) {
                     this[i].textContent = value;
                 }
                 return;
@@ -88,26 +133,14 @@
         return this;
     }
 
-    function ajax(url, method, data, success, fail) {
-        let xhr = new XMLHttpRequest()
-        xhr.open(url,method)
-        xhr.addEventListener('readystatechange', function(e){
-            if(this.readyState === 4 && (this.status >= 200 && this.status < 300)) {
-                success(this.responseText)
-            }else {
-                fail(this)
-            }
-        })
-        xhr.send(data)
-    }
 
     init(nodeOrSelector);
     sj.getSiblings = getSiblings;
     sj.addClass = addClass;
     sj.text = text;
     sj.ajax = ajax;
+
+
     return sj;
 
 });
-
-
